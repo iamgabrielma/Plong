@@ -26,9 +26,55 @@ class GameScene: SKScene {
         enemyLabel.text = "\(score[1])"
     }
     
+    func createParallaxBG(){
+        
+        let bgTop = SKSpriteNode(color: UIColor(hue: 0.50, saturation: 0.10, brightness: 0.94, alpha: 1), size: CGSize(width: self.frame.width * 0.67, height: self.frame.height))
+        let bgBottom = SKSpriteNode(color: UIColor(hue: 0.55, saturation: 0.16, brightness: 0.96, alpha: 1), size: CGSize(width: self.frame.width * 0.33, height: self.frame.height))
+        // By default, nodes have the anchor point X:0.5, Y:0.5, they calculate their position from their horizontal and vertical center
+        // If X:0.5, Y:1 so that they measure from their center top instead, makes it easier to position because one part of the sky will take up 67% of the screen and the other part will take up 33%
+        bgTop.anchorPoint = CGPoint(x: 0.5, y: 1)
+        bgBottom.anchorPoint = CGPoint(x: 0.5, y: 1)
+        
+        bgTop.position = CGPoint(x: self.frame.width, y: self.frame.midY)
+        bgBottom.position = CGPoint(x: self.frame.width, y: bgTop.frame.midY)
+
+        addChild(bgTop)
+        addChild(bgBottom)
+
+        bgBottom.zPosition = -40
+        bgTop.zPosition = -40
+        
+        // Positioning debug:
+        //print(self.frame.width, self.frame.height) // iPhone11: 750.0 1334.0 ok
+        //print(bgTop.size.width, bgTop.size.height, bgBottom.size.width, bgBottom.size.height) // 750.0 893.780029296875 750.0 440.2200012207031 ok
+        
+        
+    }
+    
+    func createParallax(){
+        let backgroundTexture = SKTexture(imageNamed: "plong_test_parallax_bg")
+
+            for i in 0 ... 1 {
+                let background = SKSpriteNode(texture: backgroundTexture)
+                background.zPosition = -30
+                background.position = CGPoint(x: 0, y: (backgroundTexture.size().height * CGFloat(i)) - CGFloat(1 * i))
+                addChild(background)
+                
+                let moveDown = SKAction.moveBy(x: 0, y: -backgroundTexture.size().height, duration: 20)
+                let moveReset = SKAction.moveBy(x: 0, y: backgroundTexture.size().height, duration: 0)
+                let moveLoop = SKAction.sequence([moveDown, moveReset])
+                let moveForever = SKAction.repeatForever(moveLoop)
+
+                background.run(moveForever)
+
+            }
+    }
+    
     override func didMove(to view: SKView) {
 
         startGame()
+        createParallaxBG()
+        createParallax()
         
         // Border Logic:
         let screenBorder = SKPhysicsBody(edgeLoopFrom: self.frame)
