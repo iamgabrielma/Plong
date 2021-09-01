@@ -70,11 +70,33 @@ class GameScene: SKScene {
             }
     }
     
+    func createParallax2() {
+        let groundTexture = SKTexture(imageNamed: "plong_test_parallax_bg_2")
+
+        for i in 0 ... 1 {
+            let ground = SKSpriteNode(texture: groundTexture)
+            ground.zPosition = -10
+            //ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 2)
+            ground.position = CGPoint(x: 0, y: (groundTexture.size().height * CGFloat(i)) - CGFloat(1 * i))
+
+            addChild(ground)
+
+            //let moveLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0, duration: 5)
+            let moveDown = SKAction.moveBy(x: 0, y: -groundTexture.size().height , duration: 5)
+            let moveReset = SKAction.moveBy(x: 0, y: groundTexture.size().height, duration: 0)
+            let moveLoop = SKAction.sequence([moveDown, moveReset])
+            let moveForever = SKAction.repeatForever(moveLoop)
+
+            ground.run(moveForever)
+        }
+    }
+    
     override func didMove(to view: SKView) {
 
         startGame()
         createParallaxBG()
         createParallax()
+        createParallax2()
         
         // Border Logic:
         let screenBorder = SKPhysicsBody(edgeLoopFrom: self.frame)
