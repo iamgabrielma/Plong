@@ -104,7 +104,7 @@ class GameScene: SKScene {
         // Animate size
         let scaleUP = SKAction.scale(to: 2, duration: 0.3)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
-        let waitAction = SKAction.wait(forDuration: 0.5)
+        let waitAction = SKAction.wait(forDuration: 0.2)
         // Sequence the actions:
         let scaleActionSequence = SKAction.sequence([unHideIt, scaleUP, scaleDown, waitAction, hideIt])
         // Run it once:
@@ -113,10 +113,10 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
 
-        startGame()
-        createParallaxBG()
-        createParallax()
-        createParallax2()
+        startGame() // Game init stuff
+        createParallaxBG() // Base parallax background
+        createParallax() // Base parallax movement
+        createParallax2() // On-top parallax movement
         
         // Border Logic:
         let screenBorder = SKPhysicsBody(edgeLoopFrom: self.frame)
@@ -170,21 +170,27 @@ class GameScene: SKScene {
     }
     
     func addScore(playerWhoWon: SKSpriteNode){
-        // reset ball impulse so doesn't accumulate indefinitely
-        ball.position = CGPoint(x: 0, y: 0) // reset to the center
-        ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // remove force
+        //let spawn = Helpers.randomize(forType: .spawnPosition, in: Int(self.frame.width * (-1.0))..<Int(self.frame.width))
+        let spawn = Helpers.randomize(forType: .spawnPosition)
+        ball.position = CGPoint(x: spawn, y: 0) // reset to the center Y, random X
+        //print("spawn:" , spawn)
+        ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // remove force so doesn't accumulate after each spawn.
         
         if playerWhoWon == mainPaddle {
             score[0] += 1
-            // TODO: randomize this
-            ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20))
+            //let impulse = Helpers.randomize(forType: .impulse, in: 15..<25)
+            let impulse = Helpers.randomize(forType: .impulse)
+            //ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20))
+            ball.physicsBody?.applyImpulse(CGVector(dx: impulse, dy: impulse))
             mainLabel.isHidden = false
             
             animateNodes(mainLabel)
         } else if playerWhoWon == enemyPaddle {
             score[1] += 1
-            // TODO: randomize this
-            ball.physicsBody?.applyImpulse(CGVector(dx: -20, dy: -20))
+            //ball.physicsBody?.applyImpulse(CGVector(dx: -20, dy: -20))
+            //let impulse = Helpers.randomize(forType: .impulse, in: 15..<25)
+            let impulse = Helpers.randomize(forType: .impulse)
+            ball.physicsBody?.applyImpulse(CGVector(dx: impulse * (-1), dy: impulse * (-1)))
             enemyLabel.isHidden = false
             animateNodes(enemyLabel)
         }
