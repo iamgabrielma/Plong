@@ -9,29 +9,23 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    
+    /// Game Objects
     var ball = SKSpriteNode()
     var enemyPaddle = SKSpriteNode()
     var mainPaddle = SKSpriteNode()
-    
+    /// UI Objects
     var enemyLabel = SKLabelNode()
     var mainLabel = SKLabelNode()
-    
     var score = [Int]()
-    
+    /// Set initial game score and labels
     func startGame(){
-        // reset score
         score = [0,0]
         mainLabel.text = "\(score[0])"
         enemyLabel.text = "\(score[1])"
-        // Init Label visibility hidden
-        mainLabel.isHidden = true
-        enemyLabel.isHidden = true
-        
-        
     }
     
-    func createParallaxBG(){
+    /// Parallax 1/3 - Background
+    func createParallaxBackGround(){
         
         let bgTop = SKSpriteNode(color: UIColor(hue: 0.50, saturation: 0.10, brightness: 0.94, alpha: 1), size: CGSize(width: self.frame.width * 0.67, height: self.frame.height))
         let bgBottom = SKSpriteNode(color: UIColor(hue: 0.55, saturation: 0.16, brightness: 0.96, alpha: 1), size: CGSize(width: self.frame.width * 0.33, height: self.frame.height))
@@ -48,15 +42,11 @@ class GameScene: SKScene {
 
         bgBottom.zPosition = -40
         bgTop.zPosition = -40
-        
-        // Positioning debug:
-        //print(self.frame.width, self.frame.height) // iPhone11: 750.0 1334.0 ok
-        //print(bgTop.size.width, bgTop.size.height, bgBottom.size.width, bgBottom.size.height) // 750.0 893.780029296875 750.0 440.2200012207031 ok
-        
-        
+
     }
     
-    func createParallax(){
+    /// Parallax 2/3 - Base layer
+    func createParallaxBaseLayer(){
         let backgroundTexture = SKTexture(imageNamed: "plong_test_parallax_bg")
 
             for i in 0 ... 1 {
@@ -75,7 +65,8 @@ class GameScene: SKScene {
             }
     }
     
-    func createParallax2() {
+    /// Parallax 3/3 - Detail layer
+    func createParallaxDetailLayer() {
         let groundTexture = SKTexture(imageNamed: "plong_test_parallax_bg_2")
 
         for i in 0 ... 1 {
@@ -96,126 +87,94 @@ class GameScene: SKScene {
         }
     }
     
-    // Animate the labels
-    func animateNodes(_ node: SKNode){
-        // Hide/Unhide node
+    /// Animation
+    func animateLabels(_ node: SKNode){
+        /// Unhide nodes
         let unHideIt = SKAction.unhide()
         let hideIt = SKAction.hide()
-        // Animate size
+        /// Animate node size
         let scaleUP = SKAction.scale(to: 2, duration: 0.3)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
         let waitAction = SKAction.wait(forDuration: 0.2)
-        // Sequence the actions:
+        /// Sequence the actions
         let scaleActionSequence = SKAction.sequence([unHideIt, scaleUP, scaleDown, waitAction, hideIt])
-        // Run it once:
+        /// Run it
         node.run(scaleActionSequence)
     }
     
+    /// Initial Game Setup when game starts
     override func didMove(to view: SKView) {
-
-        startGame() // Game init stuff
-        createParallaxBG() // Base parallax background
-        createParallax() // Base parallax movement
-        createParallax2() // On-top parallax movement
-        
-        // Border Logic:
+        /// Game stuff:
+        startGame()
+        /// Parallax stuff:
+        createParallaxBackGround()
+        createParallaxBaseLayer()
+        createParallaxDetailLayer()
+        /// Border Logic:
         let screenBorder = SKPhysicsBody(edgeLoopFrom: self.frame)
-        screenBorder.friction = 0
-        screenBorder.restitution = 1 // So the ball bounces.
+        screenBorder.friction = 0 /// So doesn't slow down the objects that collide
+        screenBorder.restitution = 1 /// So the ball bounces when hitting the screen borders
         self.physicsBody = screenBorder
-        
-        // Ball Logic:
+        /// Ball Logic:
         ball = self.childNode(withName: "ball") as! SKSpriteNode
         enemyPaddle = self.childNode(withName: "enemyPaddle") as! SKSpriteNode
         mainPaddle = self.childNode(withName: "mainPaddle") as! SKSpriteNode
-        // In quadrants, the bigger dx and dy the impulse will be bigger. This 20/20 launches in a 45º
-        ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20))
-        
-        // Labels:
+        ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20)) /// Initial impulse
+        /// Labels:
         mainLabel = self.childNode(withName: "mainLabel") as! SKLabelNode
         enemyLabel = self.childNode(withName: "enemyLabel") as! SKLabelNode
-        
-        
     }
-    
+    /// Determines when/where is the screen touched
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Determine where screen is touched:
+        
         for touch in touches {
-            let loc = touch.location(in: self) // loc of finger in view
-            
-            mainPaddle.run(SKAction.moveTo(x: loc.x, duration: 0.2))
+            let loc = touch.location(in: self) /// Loc of finger in view
+            mainPaddle.run(SKAction.moveTo(x: loc.x, duration: 0.2)) /// Move to X with a delayed response
         }
     }
-    
+    /// Determines when/where is the screen touched, and dragged
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Determine where screen is touched and dragged:
         for touch in touches {
-            let loc = touch.location(in: self) // loc of finger in view
-            
-            mainPaddle.run(SKAction.moveTo(x: loc.x, duration: 0.2))
+            let loc = touch.location(in: self) /// Loc of finger in view
+            mainPaddle.run(SKAction.moveTo(x: loc.x, duration: 0.2)) /// Move to X with a delayed response
         }
     }
-    
+    /// Logic in the Update game loop - Code here should be kept to a minimum for performance
     override func update(_ currentTime: TimeInterval) {
-        // Enemy should move along with the ball but a bit delayed:
-        enemyPaddle.run(SKAction.moveTo(x: ball.position.x, duration: 1.0))
-        // Keep code here to a minimum for performance reasons.
-        // Lower of screen
+        #warning("TODO: Adjust enemy difficulty by adjusting delay speed")
+        enemyPaddle.run(SKAction.moveTo(x: ball.position.x, duration: 1.0)) /// Enemy moves along with the ball, but a bit delayed.
+        #warning("TODO: Check if -20 is a good border or should be modified")
+        /// Screen bottom threeshold to score
         if ball.position.y <= (mainPaddle.position.y - 20 ){
             addScore(playerWhoWon: enemyPaddle)
         }
+        /// Screen top threeshold to score
         else if ball.position.y >= (enemyPaddle.position.y - 20 ){
             addScore(playerWhoWon: mainPaddle)
         }
     }
-    
+    /// Sums score, resets the game set, trigger changes in UI and labels
     func addScore(playerWhoWon: SKSpriteNode){
-        //let spawn = Helpers.randomize(forType: .spawnPosition, in: Int(self.frame.width * (-1.0))..<Int(self.frame.width))
         let spawn = Helpers.randomize(forType: .spawnPosition)
-        ball.position = CGPoint(x: spawn, y: 0) // reset to the center Y, random X
-        //print("spawn:" , spawn)
-        ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // remove force so doesn't accumulate after each spawn.
-        
+        ball.position = CGPoint(x: spawn, y: 0) /// Reset the ball to spawn in random X & Y = 0 position
+        ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0) /// Remove force so it doesn't accumulate after each new ball spawn
+        /// Player scores logic:
         if playerWhoWon == mainPaddle {
             score[0] += 1
-            //let impulse = Helpers.randomize(forType: .impulse, in: 15..<25)
             let impulse = Helpers.randomize(forType: .impulse)
-            //ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20))
             ball.physicsBody?.applyImpulse(CGVector(dx: impulse, dy: impulse))
             mainLabel.isHidden = false
-            
-            animateNodes(mainLabel)
+            animateLabels(mainLabel)
+        /// Enemy scores logic:
         } else if playerWhoWon == enemyPaddle {
             score[1] += 1
-            //ball.physicsBody?.applyImpulse(CGVector(dx: -20, dy: -20))
-            //let impulse = Helpers.randomize(forType: .impulse, in: 15..<25)
             let impulse = Helpers.randomize(forType: .impulse)
             ball.physicsBody?.applyImpulse(CGVector(dx: impulse * (-1), dy: impulse * (-1)))
             enemyLabel.isHidden = false
-            animateNodes(enemyLabel)
+            animateLabels(enemyLabel)
         }
-        // Update labels
-        
+        /// Update labels
         mainLabel.text = "\(score[0])"
         enemyLabel.text = "\(score[1])"
-        // Back to hidden
-        
-        // DEBUG:
-        // print(score)
     }
-}
-
-// Experimenting with label animation:
-extension SKLabelNode {
-    
-    func renderLabel(){
-        fontSize = 50
-        text = ""
-        verticalAlignmentMode = .center
-        horizontalAlignmentMode = .center
-    }
-}
-
-extension GameScene {
-    // WIP
 }
