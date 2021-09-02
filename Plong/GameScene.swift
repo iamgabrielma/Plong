@@ -24,8 +24,11 @@ class GameScene: SKScene {
         score = [0,0]
         mainLabel.text = "\(score[0])"
         enemyLabel.text = "\(score[1])"
+        // Init Label visibility hidden
         mainLabel.isHidden = true
         enemyLabel.isHidden = true
+        
+        
     }
     
     func createParallaxBG(){
@@ -95,14 +98,17 @@ class GameScene: SKScene {
     
     // Animate the labels
     func animateNodes(_ node: SKNode){
-        #warning("WIP: Animations for labels")
-            let scaleUP = SKAction.scale(to: 2, duration: 0.3)
-            let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
-            let waitAction = SKAction.wait(forDuration: 0.5)
-            // Sequence the actions:
-            let scaleActionSequence = SKAction.sequence([scaleUP, scaleDown, waitAction])
-            // Run it once:
-            node.run(scaleActionSequence)
+        // Hide/Unhide node
+        let unHideIt = SKAction.unhide()
+        let hideIt = SKAction.hide()
+        // Animate size
+        let scaleUP = SKAction.scale(to: 2, duration: 0.3)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
+        let waitAction = SKAction.wait(forDuration: 0.5)
+        // Sequence the actions:
+        let scaleActionSequence = SKAction.sequence([unHideIt, scaleUP, scaleDown, waitAction, hideIt])
+        // Run it once:
+        node.run(scaleActionSequence)
     }
     
     override func didMove(to view: SKView) {
