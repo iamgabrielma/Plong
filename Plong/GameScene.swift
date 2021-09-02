@@ -24,6 +24,11 @@ class GameScene: SKScene {
         score = [0,0]
         mainLabel.text = "\(score[0])"
         enemyLabel.text = "\(score[1])"
+        // Init Label visibility hidden
+        mainLabel.isHidden = true
+        enemyLabel.isHidden = true
+        
+        
     }
     
     func createParallaxBG(){
@@ -91,6 +96,21 @@ class GameScene: SKScene {
         }
     }
     
+    // Animate the labels
+    func animateNodes(_ node: SKNode){
+        // Hide/Unhide node
+        let unHideIt = SKAction.unhide()
+        let hideIt = SKAction.hide()
+        // Animate size
+        let scaleUP = SKAction.scale(to: 2, duration: 0.3)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.3)
+        let waitAction = SKAction.wait(forDuration: 0.5)
+        // Sequence the actions:
+        let scaleActionSequence = SKAction.sequence([unHideIt, scaleUP, scaleDown, waitAction, hideIt])
+        // Run it once:
+        node.run(scaleActionSequence)
+    }
+    
     override func didMove(to view: SKView) {
 
         startGame()
@@ -150,7 +170,6 @@ class GameScene: SKScene {
     }
     
     func addScore(playerWhoWon: SKSpriteNode){
-        
         // reset ball impulse so doesn't accumulate indefinitely
         ball.position = CGPoint(x: 0, y: 0) // reset to the center
         ball.physicsBody?.velocity = CGVector(dx: 0, dy: 0) // remove force
@@ -159,16 +178,38 @@ class GameScene: SKScene {
             score[0] += 1
             // TODO: randomize this
             ball.physicsBody?.applyImpulse(CGVector(dx: 20, dy: 20))
+            mainLabel.isHidden = false
+            
+            animateNodes(mainLabel)
         } else if playerWhoWon == enemyPaddle {
             score[1] += 1
             // TODO: randomize this
             ball.physicsBody?.applyImpulse(CGVector(dx: -20, dy: -20))
+            enemyLabel.isHidden = false
+            animateNodes(enemyLabel)
         }
         // Update labels
+        
         mainLabel.text = "\(score[0])"
         enemyLabel.text = "\(score[1])"
+        // Back to hidden
         
         // DEBUG:
         // print(score)
     }
+}
+
+// Experimenting with label animation:
+extension SKLabelNode {
+    
+    func renderLabel(){
+        fontSize = 50
+        text = ""
+        verticalAlignmentMode = .center
+        horizontalAlignmentMode = .center
+    }
+}
+
+extension GameScene {
+    // WIP
 }
