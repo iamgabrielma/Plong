@@ -9,19 +9,19 @@ import Foundation
 
 class Helpers {
     
+    /// Returns a random value based on the type of randomization provided
     enum calcType { case impulse, spawnPosition }
-    
     static func randomize(forType: calcType) -> Int {
         
         switch forType {
-        case .impulse:
-            let range = 15..<25
-            return Int.random(in: range)
-        
-        case .spawnPosition:
-            let range = -200..<200
-            return Int.random(in: range)
+            /// Ball impulse
+            case .impulse:
+                let range = 15..<25
+                return Int.random(in: range)
+            /// Ball spawn position
+            case .spawnPosition:
+                let range = -200..<200
+                return Int.random(in: range)
         }
-     
     }
 }

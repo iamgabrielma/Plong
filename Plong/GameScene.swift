@@ -26,58 +26,49 @@ class GameScene: SKScene {
     
     /// Parallax 1/3 - Background
     func createParallaxBackGround(){
-        
+        /// The Background consists of 2 different layers, these cover 67% and 33% of the screen respectively:
         let bgTop = SKSpriteNode(color: UIColor(hue: 0.50, saturation: 0.10, brightness: 0.94, alpha: 1), size: CGSize(width: self.frame.width * 0.67, height: self.frame.height))
         let bgBottom = SKSpriteNode(color: UIColor(hue: 0.55, saturation: 0.16, brightness: 0.96, alpha: 1), size: CGSize(width: self.frame.width * 0.33, height: self.frame.height))
-        // By default, nodes have the anchor point X:0.5, Y:0.5, they calculate their position from their horizontal and vertical center
-        // If X:0.5, Y:1 so that they measure from their center top instead, makes it easier to position because one part of the sky will take up 67% of the screen and the other part will take up 33%
+        /// Anchors and positioning:
         bgTop.anchorPoint = CGPoint(x: 0.5, y: 1)
         bgBottom.anchorPoint = CGPoint(x: 0.5, y: 1)
-        
         bgTop.position = CGPoint(x: self.frame.width, y: self.frame.midY)
         bgBottom.position = CGPoint(x: self.frame.width, y: bgTop.frame.midY)
-
         addChild(bgTop)
         addChild(bgBottom)
-
         bgBottom.zPosition = -40
         bgTop.zPosition = -40
-
     }
     
     /// Parallax 2/3 - Base layer
     func createParallaxBaseLayer(){
+        #warning("Create new graphics: https://github.com/iamgabrielma/Plong/issues/3")
         let backgroundTexture = SKTexture(imageNamed: "plong_test_parallax_bg")
-
-            for i in 0 ... 1 {
-                let background = SKSpriteNode(texture: backgroundTexture)
-                background.zPosition = -30
-                background.position = CGPoint(x: 0, y: (backgroundTexture.size().height * CGFloat(i)) - CGFloat(1 * i))
-                addChild(background)
+        for i in 0 ... 1 {
+            let background = SKSpriteNode(texture: backgroundTexture)
+            background.zPosition = -30
+            background.position = CGPoint(x: 0, y: (backgroundTexture.size().height * CGFloat(i)) - CGFloat(1 * i))
+            addChild(background)
                 
-                let moveDown = SKAction.moveBy(x: 0, y: -backgroundTexture.size().height, duration: 20)
-                let moveReset = SKAction.moveBy(x: 0, y: backgroundTexture.size().height, duration: 0)
-                let moveLoop = SKAction.sequence([moveDown, moveReset])
-                let moveForever = SKAction.repeatForever(moveLoop)
+            let moveDown = SKAction.moveBy(x: 0, y: -backgroundTexture.size().height, duration: 20)
+            let moveReset = SKAction.moveBy(x: 0, y: backgroundTexture.size().height, duration: 0)
+            let moveLoop = SKAction.sequence([moveDown, moveReset])
+            let moveForever = SKAction.repeatForever(moveLoop)
 
-                background.run(moveForever)
-
-            }
+            background.run(moveForever)
+        }
     }
     
     /// Parallax 3/3 - Detail layer
     func createParallaxDetailLayer() {
+        #warning("Create new graphics: https://github.com/iamgabrielma/Plong/issues/3")
         let groundTexture = SKTexture(imageNamed: "plong_test_parallax_bg_2")
-
         for i in 0 ... 1 {
             let ground = SKSpriteNode(texture: groundTexture)
             ground.zPosition = -10
-            //ground.position = CGPoint(x: (groundTexture.size().width / 2.0 + (groundTexture.size().width * CGFloat(i))), y: groundTexture.size().height / 2)
             ground.position = CGPoint(x: 0, y: (groundTexture.size().height * CGFloat(i)) - CGFloat(1 * i))
-
             addChild(ground)
-
-            //let moveLeft = SKAction.moveBy(x: -groundTexture.size().width, y: 0, duration: 5)
+            
             let moveDown = SKAction.moveBy(x: 0, y: -groundTexture.size().height , duration: 5)
             let moveReset = SKAction.moveBy(x: 0, y: groundTexture.size().height, duration: 0)
             let moveLoop = SKAction.sequence([moveDown, moveReset])
@@ -107,6 +98,7 @@ class GameScene: SKScene {
         /// Game stuff:
         startGame()
         /// Parallax stuff:
+        #warning("createParallaxBackGround() not visible -> https://github.com/iamgabrielma/Plong/issues/11")
         createParallaxBackGround()
         createParallaxBaseLayer()
         createParallaxDetailLayer()
@@ -126,7 +118,6 @@ class GameScene: SKScene {
     }
     /// Determines when/where is the screen touched
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         for touch in touches {
             let loc = touch.location(in: self) /// Loc of finger in view
             mainPaddle.run(SKAction.moveTo(x: loc.x, duration: 0.2)) /// Move to X with a delayed response
@@ -141,14 +132,14 @@ class GameScene: SKScene {
     }
     /// Logic in the Update game loop - Code here should be kept to a minimum for performance
     override func update(_ currentTime: TimeInterval) {
-        #warning("TODO: Adjust enemy difficulty by adjusting delay speed")
+        #warning("Adjust enemy difficulty by adjusting delay speed - https://github.com/iamgabrielma/Plong/issues/12")
         enemyPaddle.run(SKAction.moveTo(x: ball.position.x, duration: 1.0)) /// Enemy moves along with the ball, but a bit delayed.
-        #warning("TODO: Check if -20 is a good border or should be modified")
-        /// Screen bottom threeshold to score
+        #warning("Adjust border threshold - https://github.com/iamgabrielma/Plong/issues/13")
+        /// Screen bottom threshold to score
         if ball.position.y <= (mainPaddle.position.y - 20 ){
             addScore(playerWhoWon: enemyPaddle)
         }
-        /// Screen top threeshold to score
+        /// Screen top threshold to score
         else if ball.position.y >= (enemyPaddle.position.y - 20 ){
             addScore(playerWhoWon: mainPaddle)
         }
