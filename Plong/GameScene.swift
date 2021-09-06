@@ -26,7 +26,8 @@ class GameScene: SKScene {
     
     /// Parallax 1/3 - Background
     func createParallaxBackGround(){
-        /// The Background consists of 2 different layers, these cover 67% and 33% of the screen respectively:
+        /// The Background consists of 3 different layers: A white base, and then 2 layers that cover 67% and 33% of the screen respectively:
+        self.backgroundColor = UIColor.white
         let bgTop = SKSpriteNode(color: UIColor(hue: 0.50, saturation: 0.10, brightness: 0.94, alpha: 1), size: CGSize(width: self.frame.width * 0.67, height: self.frame.height))
         let bgBottom = SKSpriteNode(color: UIColor(hue: 0.55, saturation: 0.16, brightness: 0.96, alpha: 1), size: CGSize(width: self.frame.width * 0.33, height: self.frame.height))
         /// Anchors and positioning:
@@ -42,8 +43,7 @@ class GameScene: SKScene {
     
     /// Parallax 2/3 - Base layer
     func createParallaxBaseLayer(){
-        #warning("Create new graphics: https://github.com/iamgabrielma/Plong/issues/3")
-        let backgroundTexture = SKTexture(imageNamed: "plong_test_parallax_bg")
+        let backgroundTexture = SKTexture(imageNamed: "bg_plong_bigger_dots")
         for i in 0 ... 1 {
             let background = SKSpriteNode(texture: backgroundTexture)
             background.zPosition = -30
@@ -61,8 +61,7 @@ class GameScene: SKScene {
     
     /// Parallax 3/3 - Detail layer
     func createParallaxDetailLayer() {
-        #warning("Create new graphics: https://github.com/iamgabrielma/Plong/issues/3")
-        let groundTexture = SKTexture(imageNamed: "plong_test_parallax_bg_2")
+        let groundTexture = SKTexture(imageNamed: "bg_plong_smaller_dots")
         for i in 0 ... 1 {
             let ground = SKSpriteNode(texture: groundTexture)
             ground.zPosition = -10
@@ -115,6 +114,8 @@ class GameScene: SKScene {
         /// Labels:
         mainLabel = self.childNode(withName: "mainLabel") as! SKLabelNode
         enemyLabel = self.childNode(withName: "enemyLabel") as! SKLabelNode
+        mainLabel.fontColor = UIColor.systemBlue
+        enemyLabel.fontColor = UIColor.systemRed
     }
     /// Determines when/where is the screen touched
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
